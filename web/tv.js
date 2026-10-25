@@ -285,17 +285,23 @@ var TV = (function () {
 
   function samsungInputs(done) {
     var list = [{id: 'source:TV:1', key: 'live', label: null, symbol: 'live_tv', connected: true}];
-    for (var n = 1; n <= 4; n++) list.push({id: 'source:HDMI:' + n, key: 'hdmi' + n, label: 'HDMI ' + n, symbol: 'hdmi', connected: true});
-    samsungSources(function (sources) {
-      if (sources) {
-        for (var i = 1; i < list.length; i++) list[i].connected = false;
-        for (var j = 0; j < sources.length; j++) {
-          var s = sources[j];
-          if (s.type === 'HDMI' && s.number >= 1 && s.number <= 4) list[s.number].connected = true;
-        }
+    for (var n = 1; n <= 4; n++) list.push({id: 'source:HDMI:' + n, key: 'hdmi' + n, label: 'HDMI ' + n, symbol: 'hdmi', connected: null});
+    function collect(sources, connected) {
+      for (var i = 0; sources && i < sources.length; i++) {
+        var source = sources[i];
+        if (source.type !== 'HDMI' || source.number < 1 || source.number > 4) continue;
+        var item = list[source.number];
+        item.connected = source.signal === false ? false : connected;
+        item.deviceName = source.deviceName || source.displayName || source.name || '';
       }
-      done(list);
-    });
+    }
+    try {
+      window.tizen.systeminfo.getPropertyValue('VIDEOSOURCE', function (v) {
+        collect(v.disconnected, false);
+        collect(v.connected, true);
+        done(list);
+      }, function () { done(list); });
+    } catch (e) { done(list); }
   }
 
   /** Samsung's settings: whichever app answers the platform's "settings" request, else the TV's menu (Tizen 3). */

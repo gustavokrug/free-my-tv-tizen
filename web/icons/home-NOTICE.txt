@@ -1,0 +1,11 @@
+YouTube, Crunchyroll, HBO, Netflix, Apple TV and Spotify SVG paths: Simple Icons,
+https://github.com/simple-icons/simple-icons (CC0-1.0).
+Brand marks remain property of their respective owners.
+Other SVG symbols and device illustrations created for this personal launcher.
+The launcher prefers the icon supplied by the installed application when available,
+except YouTube, which uses the local red play mark to avoid the TV's placeholder.
+
+The PNG images for PS5, Switch 2, Wii U and Steam Deck are real product photos/renders
+from Sony, Nintendo and Valve. Their original URLs are recorded in device-photo-sources.json.
+These product images are copyrighted by their respective owners and included for this
+personal TV launcher; they are not covered by Simple Icons' CC0 license.

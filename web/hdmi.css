@@ -1,0 +1,21 @@
+.tile img.home-brand, .cell .face img.home-brand { width: 80%; height: 78%; max-width: none; max-height: none; object-fit: contain; }
+.key img.hdmi-photo { position: absolute; top: 5px; left: 10%; width: 80%; height: 67px; object-fit: contain; }
+.key.hdmi-key .label { top: 76px; left: 16px; right: 5px; font-size: 20px; }
+.hdmi-port { position: absolute; top: 103px; width: 100%; font-size: 15px; opacity: 0.8; }
+.hdmi-dot { position: absolute; left: 7px; top: 84px; width: 10px; height: 10px; border-radius: 50%; background: #8e8e93; }
+.hdmi-dot.online { background: #00df83; }
+.hdmi-dot.offline { background: #ff4264; }
+.hdmi-help { position: absolute; top: 676px; left: 84px; font-size: 18px; color: #555; }
+.night .hdmi-help { color: #ddd; }
+.hdmi-editor { position: absolute; z-index: 20; top: 0; left: 0; width: 1920px; height: 1080px; background: rgba(0,0,0,0.85); color: white; }
+.hdmi-box { position: absolute; top: 160px; left: 310px; width: 1220px; padding: 40px; background: #202632; border-radius: 28px; }
+.hdmi-box h2 { font-size: 38px; margin: 0 0 18px; }
+.hdmi-box p, .hdmi-box label { font-size: 26px; }
+.hdmi-box button { border: 3px solid transparent; background: #35445b; color: white; font-size: 25px; padding: 16px 24px; margin: 8px; border-radius: 14px; }
+.hdmi-presets button { width: 216px; height: 170px; vertical-align: top; }
+.hdmi-presets img { display: block; width: 160px; height: 100px; object-fit: contain; margin: 0 auto 8px; }
+.hdmi-presets .selected { border-color: #00df83; }
+.hdmi-box input { display: block; width: 1120px; padding: 16px; font-size: 32px; margin-top: 14px; color: #111; background: white; }
+.hdmi-box button:focus, .hdmi-box input:focus { outline: 5px solid white; background-color: #576e91; }
+.hdmi-box input:focus { background: white; }
+.hdmi-error { color: #ff8b9e; min-height: 30px; }

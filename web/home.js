@@ -237,6 +237,16 @@
     var top = k ? k[3][0] : app.color ? darken(app.color, 0.92) : '#2A2A2E';
     var bottom = k ? k[3][1] : app.color ? darken(app.color, 0.62) : '#161618';
     paint(box, top, bottom);
+    if (k && (k[0] === 'disney' || k[0] === 'max')) {
+      var brand = el('img', 'home-brand', box);
+      brand.src = 'icons/' + (k[0] === 'disney' ? 'disneyplus' : 'hbomax') + '-vector.svg';
+      brand.onerror = function () {
+        if (brand.parentNode) brand.parentNode.removeChild(brand);
+        el('div', 'word', box, app.title);
+      };
+      brand.alt = app.title;
+      return;
+    }
     var word = el('div', 'word', box, app.title);
     if (wordSize) word.style.fontSize = wordSize + 'px';
     if (app.icon) {
@@ -365,7 +375,7 @@
     }
     var buttons = $('buttons');
     buttons.innerHTML = '';
-    var defs = [['live_tv', tr('light|Live TV')], ['hdmi', tr('HDMI Inputs')], ['settings', tr('light|Settings')]];
+    var defs = [['live_tv', TV.name === 'tizen' ? 'Tizen' : tr('light|Live TV')], ['hdmi', tr('HDMI Inputs')], ['settings', tr('light|Settings')]];
     for (var b = 0; b < 3; b++) {
       var r = el('button', 'round' + (b === 2 ? ' last' : ''), buttons);
       r.style.left = (1596 + 88 * b) + 'px';
@@ -525,7 +535,9 @@
     drawerItems = [];
     for (var i = 0; i < inputs.length; i++) {
       var x = inputs[i];
-      drawerItems.push({label: x.label || tr('Live TV'), symbol: x.symbol, off: !x.connected, run: launcher(x.id, x.label)});
+      var hdmi = /^hdmi[1-4]$/.test(x.key), detail = hdmi ? HDMI.details(x) : null;
+      drawerItems.push({label: detail ? detail.name : x.label || tr('Live TV'), symbol: x.symbol,
+        input: hdmi ? x : null, detail: detail, off: x.connected === false, run: launcher(x.id, x.label)});
     }
     drawerInputs = drawerItems.length;
     drawerItems.push({label: tr('All Apps'), symbol: 'apps', run: openApps});
@@ -543,11 +555,22 @@
       var item = drawerItems[k], key = el('div', 'key glass' + (item.off ? ' off' : ''), d);
       key.style.left = xPos + 'px';
       key.style.width = tw + 'px';
-      sym(item.symbol, key);
-      el('div', 'label', key, item.label);
+      if (item.detail && item.detail.icon !== 'hdmi') {
+        var photo = el('img', 'hdmi-photo', key);
+        photo.src = 'icons/home-' + item.detail.icon + '.png';
+        photo.alt = item.label;
+      } else sym(item.symbol, key);
+      var label = el('div', 'label', key, item.label);
+      if (item.input) {
+        key.className += ' hdmi-key';
+        var dot = el('span', 'hdmi-dot ' + (item.input.connected === true ? 'online' : item.input.connected === false ? 'offline' : 'unknown'), key);
+        dot.title = item.input.connected === true ? 'Sinal conectado' : item.input.connected === false ? 'Sem sinal' : 'Status indisponível';
+        el('div', 'hdmi-port', key, item.input.label);
+      }
       hover(key, Z.DRAWER, k);
       xPos += tw + gap;
     }
+    el('div', 'hdmi-help', d, 'HDMI: segure OK ou pressione Play/Pause para editar nome e imagem');
     renderPanels();
     updateFocus();
   }
@@ -878,7 +901,10 @@
     switch (st.zone) {
       case Z.TOP:
         if (st.top < 3) return;
-        if (st.top === 3) { var live = liveTV(); if (live) launcher(live.id, tr('Live TV'))(); }
+        if (st.top === 3) {
+          if (TV.name === 'tizen') launcher('com.samsung.tv.csfs', 'Tizen')();
+          else { var live = liveTV(); if (live) launcher(live.id, tr('Live TV'))(); }
+        }
         else if (st.top === 4) { st.zone = Z.SHELF; openDrawer(); st.drawer = 1 < drawerInputs ? 1 : 0; updateFocus(); }
         else openSettings();
         return;
@@ -1081,6 +1107,7 @@
 
   document.addEventListener('keydown', function (e) {
     var k = e.keyCode;
+    if (window.HDMI && HDMI.keydown(e)) return;
     if (poke()) { e.preventDefault(); return; }   // the first press only wakes the screen
     if (k === TV.keys.left) move(-1, 0);
     else if (k === TV.keys.right) move(1, 0);
@@ -1178,6 +1205,19 @@
     if (!saverOn && !sheetOpen() && Date.now() - idleAt > SAVER_AFTER) showSaver();
     if (saverOn) tickSaverClock($('saver').querySelector('.clock'));
   }, 30000);
+
+  var sourceRefreshPending = false;
+  function refreshInputs() {
+    if (document.hidden || sourceRefreshPending || HDMI.isOpen()) return;
+    sourceRefreshPending = true;
+    TV.inputs(function (list) { sourceRefreshPending = false; inputs = list; renderDrawer(); });
+  }
+  setInterval(refreshInputs, 5000);
+  window.HDMIHost = {
+    selected: function () { return st.zone === Z.DRAWER && drawerItems[st.drawer] ? drawerItems[st.drawer].input : null; },
+    activate: activate,
+    redraw: renderDrawer
+  };
 
   // For the browser preview and tests.
   window.FreeMyTV = {state: st, move: move, activate: activate, back: back, showSaver: showSaver, hideSaver: hideSaver, toast: toast};
