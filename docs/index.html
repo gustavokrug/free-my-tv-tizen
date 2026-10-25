@@ -3359,12 +3359,15 @@ Object.defineProperty(Data,'weatherAt',{get:function(){return demoNow;}});
 </script>
 
 <style>
+html,body{background:#0b0b0d}body.night{background:#0b0b0d}body:not(.night){background:#f5f5f7}
 #demo-bar{position:fixed;z-index:100;top:0;left:0;right:0;padding:9px 16px;background:#101823;color:white;font:14px system-ui;display:flex;gap:16px;align-items:center;justify-content:space-between}
 #demo-bar button,#demo-bar a{color:white;background:#27384e;border:1px solid #5c6d81;border-radius:8px;padding:6px 12px;text-decoration:none;cursor:pointer}
 @media(max-width:800px){#demo-bar{font-size:11px;padding:6px;gap:4px}#demo-bar .help{display:none}}
 </style>
 <div id="demo-bar"><strong>DEMO · Free My TV Tizen</strong><span class="help">Dados fictícios · Setas: navegar · Enter: abrir · Esc: voltar · Segure Enter no HDMI: editar</span><div><button id="demo-theme">Dia / Noite</button> <button id="demo-inputs">Entradas</button> <a href="https://github.com/gustavokrug/free-my-tv-tizen">Código e alterações</a></div></div>
 <script>
+function centerDemo(){var scale=Math.min(innerWidth/1920,innerHeight/1080);document.getElementById('stage').style.left=((innerWidth-1920*scale)/2)+'px';}
+window.addEventListener('resize',centerDemo);centerDemo();
 document.getElementById('demo-theme').onclick=function(){Prefs.set('theme',Prefs.theme()==='dark'?'light':'dark');FreeMyTV.move(1,0);document.body.classList.toggle('night',Prefs.theme()==='dark');document.documentElement.style.background=Prefs.theme()==='dark'?'#0B0B0D':'';};
 document.getElementById('demo-inputs').onclick=function(){FreeMyTV.state.zone='shelf';FreeMyTV.move(0,1);};
 setTimeout(function(){FreeMyTV.move(0,1);},0);
